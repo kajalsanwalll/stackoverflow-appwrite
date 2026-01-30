@@ -7,55 +7,40 @@ import { storage } from "./config";
 export default async function getOrCreateStorage() {
     
     try {
-        await storage
-    } catch (error) {
+        await storage.getBucket(questionAttachmentBucket);
+        console.log("Storage connected!");
         
+    } catch (error) {
+        try{
+            await storage.createBucket(
+                questionAttachmentBucket,
+                questionAttachmentBucket,
+                [
+                    Permission.create("users"),
+                    Permission.read("any"),
+                    Permission.read("users"),
+                    Permission.update("users"),
+                    Permission.delete("users")
+
+                ],
+                false,
+                undefined,
+                undefined,
+                ["jpg", "png", "gif", "jpeg", "webp", "heic"]
+            );
+
+            console.log("Storage created!");
+            console.log("Storage connected!");
+            
+        }catch (error){
+
+        console.error("Error creating storage:", error)
+
     }
+        
+    } 
 
 
 
-    //create collection
-    await databases.createCollection(db, questionCollection, questionCollection, [
-        Permission.read("any"),
-        Permission.read("users"),
-        Permission.create("users"),
-        Permission.update("users"),
-        Permission.delete("users")
-    ])
-
-    console.log("Question Collection is created!");
-
-    // creating attributes and indexes
-
-    await Promise.all([
-        databases.createStringAttribute(db, questionCollection, "title", 100, true),
-        databases.createStringAttribute(db, questionCollection, "content", 10000, true),
-        databases.createStringAttribute(db, questionCollection, "authorId", 50, true),
-        databases.createStringAttribute(db, questionCollection, "tags", 50, true, undefined, true),
-        databases.createStringAttribute(db, questionCollection, "attachmentId", 50, false)
-    ]);
-
-    console.log("Question Attributes created");
-
-    // create indexes
-    await Promise.all([
-        databases.createIndex(
-            db,
-            questionCollection,
-            "title",
-            IndexType.Fulltext,
-            ["title"],
-            ['asc']
-        ),
-        databases.createIndex(
-            db,
-            questionCollection,
-            "content",
-            IndexType.Fulltext,
-            ["content"],
-            ['asc']
-        )
-    ])
-    
     
 }
