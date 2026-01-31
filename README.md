@@ -1,0 +1,1 @@
+Built a full-stack Q&A platform using Next.js and Appwrite supporting auth, voting, and role-based permissions for 1k+ simulated users
